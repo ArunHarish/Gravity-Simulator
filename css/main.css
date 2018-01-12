@@ -1,0 +1,51 @@
+html {
+    color:#eee;
+}
+
+div#wrapper {
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    font-family: "Monospace";
+}
+
+div#gravity-control-wrapper {
+    position:relative;
+    background :rgba(10, 10, 10, 0.5);
+    width:160px;
+    height: 45px;
+    margin:auto;
+    font-size: 0.8em;
+    text-align: center;
+    display:table;
+}
+
+div#gravity-control-label, div#gravity-particle-wrapper {
+    width: 100%;
+    height: 20px;
+}
+
+div#gravity-control-view {
+    width:100%;
+    height: 5px;
+    background: #000;
+    overflow: hidden;
+}
+
+div#gravity-control-inner-view {
+    width: 1%;
+    height: 5px;
+    background: #eee;
+}
+
+canvas#view {
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}

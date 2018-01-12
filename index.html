@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Gravity Simulation - Barnes-Hut</title>
+    <link rel = "Stylesheet" href = "css/main.css" />
+    <script type = "text/javascript" data-main="js/main.js" src="js/lib/require.js"></script>
+</head>
+<body>
+    <div id="wrapper">
+        <div id = "gravity-control-wrapper">
+            <div id = "gravity-control-label">
+                <span id="text-label">Mass </label>
+                <span id="mass-label">1</span>
+            </div>
+            <div id="gravity-control-view">
+                <div id="gravity-control-inner-view"></div>
+            </div>
+            <div id="gravity-particle-wrapper">
+                <span id="particle-label">Particle </span>
+                <span id="particle-number">0</span>
+            </div>
+        </div>
+        <div id="view-wrapper">
+            <canvas id="view"></canvas>
+        </div>
+        <div id="gravity-options">
+            <div id="track-path">
+                <span id="option-label">Track Path </span>
+                <input type="checkbox" />
+            </div>
+            <div id="particle-colour">
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
