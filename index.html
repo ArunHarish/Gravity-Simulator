@@ -10,9 +10,11 @@
     src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.js"></script>
     <script type = "text/javascript" src="js/main.js" ></script>
 </head>
-<body ng-app = "gravity">
-    <div id="wrapper">
-        <div id = "gravity-control-wrapper" ng-controller="control-information">
+<body ng-app = "gravity" ng-controller="information" ng-keydown="onKeyPress($event)"
+    ng-init="color.select=Red"
+>
+    <div id="wrapper" >
+        <div id = "gravity-control-wrapper">
             <div id = "gravity-control-label">
                 <span id="text-label">Mass </label>
                 <span id="mass-label">{{mass}}</span>
@@ -25,13 +27,16 @@
                 <span id="particle-number">{{particleNumber}}</span>
             </div>
         </div>
-        <div id="view-wrapper" ng-controller="cursor-information">
+        <div id="view-wrapper">
             <canvas id="particle-view"></canvas>
             <canvas id="tree-view"></canvas>
             <canvas id="track-view"></canvas>
-            <canvas id="magnitude-view" ng-mousemove="setCoord($event)"></canvas>
+            <canvas id="magnitude-view"
+            ng-mousedown="setStart($event)"
+            ng-mouseup="setEnd($event)"          
+            ng-mousemove="setPoint($event)"></canvas>
         </div>
-        <div id="gravity-information-wrapper" ng-controller="cursor-information">
+        <div id="gravity-information-wrapper">
             <div id="information-x">
                 coord:
                 (<span id= "x-value">{{x}}</span>, 
@@ -43,14 +48,17 @@
         <div id="gravity-options-wrapper">
             <div id="track-path">
                 <span id="track-option-label">Track Path </span>
-                <input type="checkbox" id = "option" />
+                <input ng-true-value="true" ng-false-value="false"
+                ng-change="setTrackOption()"
+                ng-model="trackPath"
+                type="checkbox" id = "option" />
             </div>
             <div id="particle-colour">
                 <span id="color-option-label">Color </span>
-                <select>
-                    <option>Red</option>
-                    <option>Blue</option>
-                    <option>Green</option>
+                <select id="color-option-select" 
+                    ng-init="color=options[0]"
+                    ng-options="option.name for option in options"
+                    ng-model="color" ng-change="setSelect()">
                 </select>
             </div>
         </div>
