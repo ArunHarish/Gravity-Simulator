@@ -6,33 +6,52 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Gravity Simulation - Barnes-Hut</title>
     <link rel = "Stylesheet" href = "css/main.css" />
-    <script type = "text/javascript" data-main="js/main.js" src="js/lib/require.js"></script>
+    <script type = "text/javascript" 
+    src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.js"></script>
+    <script type = "text/javascript" src="js/main.js" ></script>
 </head>
-<body>
+<body ng-app = "gravity">
     <div id="wrapper">
-        <div id = "gravity-control-wrapper">
+        <div id = "gravity-control-wrapper" ng-controller="control-information">
             <div id = "gravity-control-label">
                 <span id="text-label">Mass </label>
-                <span id="mass-label">1</span>
+                <span id="mass-label">{{mass}}</span>
             </div>
             <div id="gravity-control-view">
                 <div id="gravity-control-inner-view"></div>
             </div>
             <div id="gravity-particle-wrapper">
                 <span id="particle-label">Particle </span>
-                <span id="particle-number">0</span>
+                <span id="particle-number">{{particleNumber}}</span>
             </div>
         </div>
-        <div id="view-wrapper">
-            <canvas id="view"></canvas>
+        <div id="view-wrapper" ng-controller="cursor-information">
+            <canvas id="particle-view"></canvas>
+            <canvas id="tree-view"></canvas>
+            <canvas id="track-view"></canvas>
+            <canvas id="magnitude-view" ng-mousemove="setCoord($event)"></canvas>
         </div>
-        <div id="gravity-options">
+        <div id="gravity-information-wrapper" ng-controller="cursor-information">
+            <div id="information-x">
+                coord:
+                (<span id= "x-value">{{x}}</span>, 
+                <span id="y-value">{{y}}</span>)</div>
+            <div id="information-mag">| mag: 
+                <span id="mag-value">{{mag}}</span>
+            </div>
+        </div>
+        <div id="gravity-options-wrapper">
             <div id="track-path">
-                <span id="option-label">Track Path </span>
-                <input type="checkbox" />
+                <span id="track-option-label">Track Path </span>
+                <input type="checkbox" id = "option" />
             </div>
             <div id="particle-colour">
-
+                <span id="color-option-label">Color </span>
+                <select>
+                    <option>Red</option>
+                    <option>Blue</option>
+                    <option>Green</option>
+                </select>
             </div>
         </div>
     </div>
