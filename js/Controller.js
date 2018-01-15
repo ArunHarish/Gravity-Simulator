@@ -1,5 +1,6 @@
-let app = angular.module("gravity", []);
+const app = angular.module("gravity", []);
 const NULL = "∅";
+const Render = new RenderObject();
 
 app.controller("information", function($scope, $window) {
 
@@ -95,6 +96,16 @@ app.controller("information", function($scope, $window) {
     }
 
     angular.element($window).bind("resize load", resize);
+    angular.element($window).bind("DOMContentLoaded", () => {
+        //Test case. The controller utilises the following
+        Render.set({
+            magnitudeRender : document.getElementById("magnitude-view"),
+            particleRender : document.getElementById("particle-view"),
+            trackRender : document.getElementById("track-view")
+        });
+    
+        Render.addMagnitude([[0 , 0], [ 0, 0]]);
+    })
 
     function resize() {
         let width = $window.innerWidth;

@@ -8,7 +8,8 @@
     <link rel = "Stylesheet" href = "css/main.css" />
     <script type = "text/javascript" 
     src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.js"></script>
-    <script type = "text/javascript" src="js/main.js" ></script>
+    <script type = "text/javascript" src="js/Render.js"></script>
+    <script type = "text/javascript" src="js/Controller.js" ></script>
 </head>
 <body ng-app = "gravity" ng-controller="information" ng-keydown="onKeyPress($event)"
     ng-init="color.select=Red"
@@ -34,8 +35,7 @@
             <canvas id="magnitude-view"
             ng-mousedown="setStart($event)"
             ng-mouseup="setEnd($event)"          
-            ng-mousemove="setPoint($event)"
-            ></canvas>
+            ng-mousemove="setPoint($event)"></canvas>
         </div>
         <div id="gravity-information-wrapper">
             <div id="information-position">
