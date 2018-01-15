@@ -34,10 +34,11 @@
             <canvas id="magnitude-view"
             ng-mousedown="setStart($event)"
             ng-mouseup="setEnd($event)"          
-            ng-mousemove="setPoint($event)"></canvas>
+            ng-mousemove="setPoint($event)"
+            ></canvas>
         </div>
         <div id="gravity-information-wrapper">
-            <div id="information-x">
+            <div id="information-position">
                 coord:
                 (<span id= "x-value">{{x}}</span>, 
                 <span id="y-value">{{y}}</span>)</div>
