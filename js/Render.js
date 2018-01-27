@@ -2,19 +2,83 @@
 
 function RenderObject() {
 
-    let protectedMap = {
-        magnitude : [void 0, void 0],
+
+    let renderInfo = {
+        magnitude : void 0,
+        validMagnitude : false,
         particle : []
     };
+    
+    //IIFE creating object
+    let Line = new (function() {
+        
+        let context;
+        
+        this.init = function(newContext) {
+            context = newContext; 
+        }
 
+        this.draw = function() {
+            let p1 = renderInfo.magnitude[0];
+            let p2 = renderInfo.magnitude[1];
+
+            context.beginPath();
+            context.moveTo(p1[0], p1[1]);
+            context.lineTo(p2[0], p2[1]);
+            context.strokeStyle = "#eee";
+            context.stroke();
+            context.closePath();
+        }
+
+        this.clear = function() {
+            let canvas = context.canvas;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        this.exec = function() {
+
+            this.clear();
+            
+            if(renderInfo.validMagnitude)
+                this.draw();
+        
+        }
+    })();
+
+    let Circle = {
+        init : function() {
+
+        }
+    }
+
+
+    let Track = {
+        context : void 0,
+        init : function(context) {
+            this.context = context;
+        },
+        exec : function() {
+
+        }
+    }
 
     function loopInit() {
+        
+        function animationFrame() {
+            Line.exec();
+            window.requestAnimationFrame(animationFrame);
+        }
 
+        animationFrame();
     }
 
     this.set = function(canvasDOM) {
-        const contextObject = {};
-        const domList = ["magnitudeRender", "particleRender", "trackRender"];
+        const contextObject = {
+            "magnitudeRender" : Line,
+            "particleRender" : Circle,
+            "trackRender" : Track
+        };
+        const domList = ["magnitudeRender"];
 
         for(let value in canvasDOM) {
             
@@ -27,30 +91,44 @@ function RenderObject() {
                     canvasElement.nodeName instanceof String
                 ) && canvasElement.tagName.toLowerCase() == "canvas"
             )
-                contextObject[value] = canvasDOM[value].getContext("2d");
-
+                contextObject[value].init(canvasDOM[value].getContext("2d"));
+                
         }
 
-        protectedMap.context = contextObject;
         loopInit();
 
     }
 
-    this.addMagnitude = function(deltaPoints) {
+    this.setMagnitude = function(deltaPoints) {
         if(!(deltaPoints instanceof Array) || deltaPoints.length != 2)
             return ; 
 
         let p1 = deltaPoints[0];
         let p2 = deltaPoints[1];
-
+        
         //Both points must be number coordinates and must be different
         if(
             p1.length == 2 && p2.length == 2 &&
             typeof p1[0] == "number" && typeof p1[1] == "number" &&
             typeof p2[0] == "number" && typeof p2[1] == "number" && 
-            (p1[0] == p2[0] ^ p1[1] == p2[1])
+            (p1[0] != p2[0] || p1[1] != p2[1])
         ) {
-            protectedMap.magnitude = deltaPoints;
+            renderInfo.magnitude = deltaPoints;
+            renderInfo.validMagnitude = true;
         }
     }
+
+    this.removeMagnitude = function() {
+        renderInfo.validMagnitude = false;
+        renderInfo.magnitude = void 0;
+    }
+
+    this.setParticleColour = function(newColour) {
+        
+    }
+
+    this.setTrackPath = function() {
+
+    }
+
 }
