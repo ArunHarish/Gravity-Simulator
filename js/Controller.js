@@ -1,22 +1,38 @@
 (function(document) {
-    const app = angular.module("gravity", []),
-    NULL = "∅",
-    Render = new RenderObject(),
-    PI = Math.PI,
-    anglePreset = [
-        -3 * Math.PI / 4 ,-Math.PI / 2, -Math.PI / 4, 0, 
-        Math.PI / 4,  Math.PI / 2, 3 * Math.PI / 4, Math.PI
-    ];
+    
+    const app = angular.module("gravity", []);
+    const NULL = "∅";
+    const Render = new RenderObject();
+    const PI = Math.PI;
 
     app.controller("information", function($scope, $window) {
 
         let massIndicator = document.getElementById("gravity-control-inner-view");
         let canvasList = document.getElementsByTagName("canvas");
         let mouse = {
+            magnitude : 0,
             isDown: false,
             down: [0, 0],
             up: [0, 0],
-            angleLock: false
+            delta : {
+                x : null,
+                y : null
+            },
+            angle : null,
+            angleLock: {
+                deltaPosition : [void 0, void 0],
+                set : false,
+                magnitude : void 0
+            },
+            update : function(x, y) {
+                mouse.up = [x, y];
+                mouse.delta.x = mouse.up[0] - mouse.down[0];
+                mouse.delta.y = mouse.up[1] - mouse.down[1];
+            
+                mouse.magnitude = (
+                    (mouse.delta.x) ** 2 + (mouse.delta.y) ** 2
+                ) ** 0.5;
+            }
         }
 
         function resize() {
@@ -30,29 +46,31 @@
 
         }
 
-        function angleLock(delta, magnitude, coord) {
-            const angle = Math.atan2(-delta.y, -delta.x);
-            coord.up[0] = magnitude * Math.cos(angle);
-            coord.up[1] = magnitude * Math.sin(angle);
+        function angleLock() {
+            let theta = Math.atan2(
+                -mouse.angleLock.deltaPosition[1],
+                mouse.angleLock.deltaPosition[0]
+            );
+
+            theta = (theta > 0) ? 2 * Math.PI - theta: theta * -1;;
+
+            //unit circle thing
+
+            mouse.up[0] = mouse.down[0] + mouse.magnitude * Math.cos(theta);
+            mouse.up[1] = mouse.down[1] + mouse.magnitude * Math.sin(theta);
+
+            console.log(
+                (
+                    (mouse.up[0] - mouse.down[0]) ** 2
+                    +
+                    (mouse.up[1] - mouse.down[1]) ** 2
+                ) ** 0.5
+            )
+
         }
 
-        function gridLockAngle(delta, magnitude) {
+        function gridLockAngle() {
 
-            //Find the closest angle
-            let angle = Math.atan2(-delta.y, -delta.x);
-            
-
-            for(let x = 0; x < anglePreset.length; x++) {
-                let boundaryAngle = anglePreset[x];
-                if(angle <= boundaryAngle)
-                {
-                    let theta = boundaryAngle - Math.PI;
-                    return [x1 + magnitude * Math.cos(theta), y1 + magnitude * Math.sin(theta)];
-                }
-            }
-
-
-            return [x2, y2];
         }
 
         $scope.mass = 1;
@@ -99,26 +117,19 @@
                 return ;
             }
 
-            mouse.up = [e.clientX, e.clientY];
+            mouse.update(
+                e.clientX, e.clientY
+            );
 
-
-            let delta = {
-                x : mouse.up[0] - mouse.down[0],
-                y : mouse.up[1] - mouse.down[1]
+            if(mouse.angleLock.set) {
+                angleLock();
             }
-            let magnitude = (
-                (delta.x) ** 2 + (delta.y) ** 2
-            ) ** 0.5;
 
-            if(mouse.angleLock) {
-                
-                console.log(mouse.up);
-                //angleLock(delta, magnitude, mouse);
-            }
-            
-            $scope.mag = magnitude
-            // Rendering stuff here
-            Render.setMagnitude([mouse.down, mouse.up])
+            $scope.mag = mouse.magnitude;
+            Render.setMagnitude(
+                [mouse.down, mouse.up]
+            )
+
         }
 
         $scope.setSelect = function(e) {
@@ -144,7 +155,15 @@
                     break;
 
                 case 16:
-                    mouse.angleLock = true;
+                    mouse.angleLock.set = true;
+                    //This is because we want to copy the value
+                    //If set to the original array then it is
+                    //referenced.
+                    if(mouse.isDown) {
+                        mouse.angleLock.deltaPosition[0] = (-mouse.down[0] + mouse.up[0]);
+                        mouse.angleLock.deltaPosition[1] = (-mouse.down[1] + mouse.up[1]);
+                    }
+                    
                     break;
 
             }
@@ -156,10 +175,10 @@
             $scope.$apply();
 
         });
-        angular.element($window).bind("keyup", (e) => {
-            if (e.keyCode == 16) mouse.angleLock = false
-        });
 
+        angular.element($window).bind("keyup", (e) => {
+            if (e.keyCode == 16) mouse.angleLock.set = false
+        });
 
         angular.element($window).bind("DOMContentLoaded", () => {
             //Test case. The controller utilises the following

@@ -19,15 +19,19 @@ function RenderObject() {
         }
 
         this.draw = function() {
+            
             let p1 = renderInfo.magnitude[0];
             let p2 = renderInfo.magnitude[1];
 
             context.beginPath();
+
             context.moveTo(p1[0], p1[1]);
             context.lineTo(p2[0], p2[1]);
             context.strokeStyle = "#eee";
+            
             context.stroke();
             context.closePath();
+        
         }
 
         this.clear = function() {
