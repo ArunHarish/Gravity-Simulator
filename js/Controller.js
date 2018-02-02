@@ -1,37 +1,64 @@
 (function(document) {
-    
-    const app = angular.module("gravity", []);
-    const NULL = "∅";
+
+    const App = angular.module("gravity", []);
     const Render = new RenderObject();
     const PI = Math.PI;
+    const Preset = [
+        7 * PI / 4, 3 * PI / 2, 5 * PI / 4,
+        PI, 3 * PI / 4, PI / 2, PI / 4, 0
+    ];
 
-    app.controller("information", function($scope, $window) {
+    App.controller("information", function($scope, $window) {
 
         let massIndicator = document.getElementById("gravity-control-inner-view");
         let canvasList = document.getElementsByTagName("canvas");
         let mouse = {
-            magnitude : 0,
+            magnitude: 0,
             isDown: false,
             down: [0, 0],
             up: [0, 0],
-            delta : {
-                x : null,
-                y : null
+            delta: {
+                x: null,
+                y: null
             },
-            angle : null,
+            angle: null,
             angleLock: {
-                deltaPosition : [void 0, void 0],
-                set : false,
-                magnitude : void 0
+                deltaPosition: [void 0, void 0],
+                set: false,
+                magnitude: void 0,
+                angle: void 0
             },
-            update : function(x, y) {
+            gridLock: {
+                set: false
+            },
+            update: function(x, y) {
+
                 mouse.up = [x, y];
-                mouse.delta.x = mouse.up[0] - mouse.down[0];
-                mouse.delta.y = mouse.up[1] - mouse.down[1];
-            
+                mouse.delta.x = x - mouse.down[0];
+                mouse.delta.y = y - mouse.down[1];
                 mouse.magnitude = (
                     (mouse.delta.x) ** 2 + (mouse.delta.y) ** 2
                 ) ** 0.5;
+
+                //Grid Lock takes priority over Angle Lock
+                
+                if (mouse.gridLock.set) {
+                    gridLockAngle();
+                    return;
+                }
+                
+                if (mouse.angleLock.set) {
+                    angleLock();
+                    return;
+                }
+
+                let theta = Math.atan2(-mouse.delta.y,
+                    mouse.delta.x
+                );
+
+                mouse.angle = (theta > 0) ? 2 * Math.PI - theta : theta * -1;;
+
+
             }
         }
 
@@ -47,39 +74,44 @@
         }
 
         function angleLock() {
-            let theta = Math.atan2(
-                -mouse.angleLock.deltaPosition[1],
+            //Theta range : [-pi, pi]
+            let theta = Math.atan2(-mouse.angleLock.deltaPosition[1],
                 mouse.angleLock.deltaPosition[0]
             );
-
-            theta = (theta > 0) ? 2 * Math.PI - theta: theta * -1;;
+            theta = (theta > 0) ? 2 * PI - theta : theta * -1;
 
             //unit circle thing
-
+            mouse.angle = theta;
             mouse.up[0] = mouse.down[0] + mouse.magnitude * Math.cos(theta);
             mouse.up[1] = mouse.down[1] + mouse.magnitude * Math.sin(theta);
-
-            console.log(
-                (
-                    (mouse.up[0] - mouse.down[0]) ** 2
-                    +
-                    (mouse.up[1] - mouse.down[1]) ** 2
-                ) ** 0.5
-            )
 
         }
 
         function gridLockAngle() {
+            let theta = Math.atan2(-mouse.delta.y, mouse.delta.x);
+            theta = (theta > 0) ? 2 * PI - theta : theta * -1;
+            
+            for(let x = 0; x < Preset.length; x++) {
+                const newTheta = Preset[x];
+                if(newTheta <= theta) {
+                    theta = newTheta;
+                    break;
+                }
+            }
 
+            mouse.angle = theta;
+            mouse.up[0] = mouse.down[0] + mouse.magnitude * Math.cos(theta);
+            mouse.up[1] = mouse.down[1] + mouse.magnitude * Math.sin(theta);
+
+        }
+
+        //Function to make the angle understandable as in normal coordinate system
+        function humanTheta(theta) {
+            return 2 * PI - theta;
         }
 
         $scope.mass = 1;
         $scope.particleNumber = 0;
-
-        $scope.x = NULL;
-        $scope.y = NULL;
-        $scope.mag = 0;
-
         $scope.options = [{
                 name: "Red",
                 value: 0
@@ -97,6 +129,7 @@
         $scope.setEnd = function(e) {
             mouse.isDown = false;
             $scope.mag = 0;
+            $scope.theta = void 0;
             //Rendering stuff here
             Render.removeMagnitude();
         }
@@ -112,23 +145,19 @@
             $scope.x = e.clientX;
             $scope.y = e.clientY;
 
-            if(!mouse.isDown) {
-                $scope.mag = 0;
-                return ;
+            if (!mouse.isDown) {
+                return;
             }
 
             mouse.update(
                 e.clientX, e.clientY
             );
 
-            if(mouse.angleLock.set) {
-                angleLock();
-            }
-
-            $scope.mag = mouse.magnitude;
+            $scope.mag = mouse.magnitude.toFixed(3);
+            $scope.theta = humanTheta(mouse.angle).toFixed(3);
             Render.setMagnitude(
                 [mouse.down, mouse.up]
-            )
+            );
 
         }
 
@@ -147,25 +176,28 @@
                 case 87:
                     if (($scope.mass + 1) <= 100)
                         $scope.mass++;
-                    break;
+                break;
 
                 case 83:
                     if (($scope.mass - 1) >= 1)
                         $scope.mass--;
-                    break;
+                break;
 
                 case 16:
                     mouse.angleLock.set = true;
                     //This is because we want to copy the value
                     //If set to the original array then it is
                     //referenced.
-                    if(mouse.isDown) {
+                    if (mouse.isDown) {
                         mouse.angleLock.deltaPosition[0] = (-mouse.down[0] + mouse.up[0]);
                         mouse.angleLock.deltaPosition[1] = (-mouse.down[1] + mouse.up[1]);
                     }
-                    
-                    break;
 
+                break;
+
+                case 17:
+                    mouse.gridLock.set = true;
+                break;
             }
 
             angular.element(massIndicator).css({
@@ -177,7 +209,8 @@
         });
 
         angular.element($window).bind("keyup", (e) => {
-            if (e.keyCode == 16) mouse.angleLock.set = false
+            if (e.keyCode == 16) mouse.angleLock.set = false;
+            if (e.keyCode == 17) mouse.gridLock.set = false;
         });
 
         angular.element($window).bind("DOMContentLoaded", () => {

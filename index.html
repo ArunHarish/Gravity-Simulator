@@ -41,11 +41,12 @@
         <div id="gravity-information-wrapper">
             <div id="information-position">
                 coord:
-                (<span id= "x-value">{{x}}</span>, 
-                <span id="y-value">{{y}}</span>)</div>
+                (<span id= "x-value">{{x >=0 ? x : "∅"}}</span>, 
+                <span id="y-value">{{y>=0 ? y : "∅"}}</span>)</div>
             <div id="information-mag">| mag: 
-                <span id="mag-value">{{mag}}</span>
+                <span id="mag-value">{{mag || 0}}</span>
             </div>
+            <div id="information-angle">| theta: {{theta >= 0 ? theta : "∅"}}</div>
         </div>
         <div id="gravity-options-wrapper">
             <div id="track-path">
