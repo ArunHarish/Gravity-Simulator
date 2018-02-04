@@ -103,6 +103,10 @@
             mouse.up[0] = mouse.down[0] + mouse.magnitude * Math.cos(theta);
             mouse.up[1] = mouse.down[1] + mouse.magnitude * Math.sin(theta);
 
+            //This enables the angle lock in effect
+            mouse.angleLock.deltaPosition[0] = -mouse.down[0] + mouse.up[0];
+            mouse.angleLock.deltaPosition[1] = -mouse.down[1] + mouse.up[1];
+
         }
 
         //Function to make the angle understandable as in normal coordinate system
@@ -126,21 +130,23 @@
             }
         ]
 
-        $scope.setEnd = function(e) {
+        $scope.setEnd = function setEnd(e) {
             mouse.isDown = false;
             $scope.mag = 0;
             $scope.theta = void 0;
-            //Rendering stuff here
+
+            //Remove the magnitude line
             Render.removeMagnitude();
+
         }
 
-        $scope.setStart = function(e) {
+        $scope.setStart = function setStart(e) {
             mouse.down[0] = e.clientX;
             mouse.down[1] = e.clientY;
             mouse.isDown = true;
         }
 
-        $scope.setPoint = function(e) {
+        $scope.setPoint = function setPoint(e) {
 
             $scope.x = e.clientX;
             $scope.y = e.clientY;
@@ -161,11 +167,11 @@
 
         }
 
-        $scope.setSelect = function(e) {
+        $scope.setSelect = function setSelect(e) {
             //Do whatever necessary to change the rendering
         }
 
-        $scope.setTrackOption = function() {
+        $scope.setTrackOption = function setTrackOption() {
             //Do whatever necessary here to change the rendering
         }
 
@@ -220,6 +226,10 @@
                 particleRender: document.getElementById("particle-view"),
                 trackRender: document.getElementById("track-view")
             });
+
+            Render.setParticleList(
+                
+            );
 
         })
 

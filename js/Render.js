@@ -135,4 +135,8 @@ function RenderObject() {
 
     }
 
+    this.setParticleList = function() {
+        
+    }
+
 }
