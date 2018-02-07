@@ -15,7 +15,7 @@ let Simulation = (function() {
             let newParticle = new Particle();
 
             particleList.push(
-
+		        newParticle
             );
         }
 
@@ -24,5 +24,3 @@ let Simulation = (function() {
     return Simulation;
 
 })();
-
-console.log(Simulation);
