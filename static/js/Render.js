@@ -1,8 +1,6 @@
 "use strict";
 
 function RenderObject() {
-
-
     let renderInfo = {
         magnitude : void 0,
         validMagnitude : false,
@@ -49,12 +47,28 @@ function RenderObject() {
         }
     })();
 
-    let Circle = {
-        init : function() {
+    let Circle = new (function() {
+        let x, y, context;
 
+        this.set = function(cntxt) {
+            if (cntxt) {
+                context = cntxt;
+            }
+
+            x = y = 0;
+            
         }
-    }
 
+        this.position = function(newX, newY) {
+            x = newX;
+            y = newY;
+        }
+
+        this.init = function(cntxt) {
+            this.context = cntxt;
+        }
+
+    })();
 
     let Track = {
         context : void 0,
@@ -82,7 +96,7 @@ function RenderObject() {
             "particleRender" : Circle,
             "trackRender" : Track
         };
-        const domList = ["magnitudeRender"];
+        const domList = ["magnitudeRender", "particleRender"];
 
         for(let value in canvasDOM) {
             
@@ -128,15 +142,20 @@ function RenderObject() {
     }
 
     this.setParticleColour = function(newColour) {
-        
+        console.log(newColour)
     }
 
     this.setTrackPath = function() {
 
     }
 
+    // Sets any pre-defined particles and their information
     this.setParticleList = function() {
         
+    }
+
+    this.addParticle = function() {
+        console.log(true);
     }
 
 }
