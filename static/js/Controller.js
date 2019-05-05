@@ -1,14 +1,16 @@
 (function(document) {
 
     const App = angular.module("gravity", []);
-    const Render = new RenderObject();
     const PI = Math.PI;
 
     App.controller("information", function($scope, $window) {
 
         let massIndicator = document.getElementById("gravity-control-inner-view");
         let canvasList = document.getElementsByTagName("canvas");
-        let mouseModel = new Mouse();
+        
+        const mouseModel = new Mouse();
+        const simulator = new Simulation(mouseModel);
+        const render = new RenderObject(simulator);
 
         function resize() {
             let width = $window.innerWidth;
@@ -48,9 +50,11 @@
             $scope.theta = void 0;
 
             //Remove the magnitude line
-            Render.removeMagnitude();
+            render.removeMagnitude();
             // Add a particle
-            Render.addParticle();
+            if (simulator.addParticle()) {
+                $scope.particleNumber++;
+            }
         }
 
         $scope.setStart = function setStart(e) {
@@ -74,7 +78,7 @@
 
             $scope.mag = mouseModel.getMag().toFixed(3);
             $scope.theta = humanTheta(mouseModel.getAngle()).toFixed(3);
-            Render.setMagnitude(
+            render.setMagnitude(
                 [mouseModel.getDown(), mouseModel.getUp()]
             );
 
@@ -93,32 +97,21 @@
 
             switch (e.keyCode) {
                 case 87:
-                    if (($scope.mass + 1) <= 100)
-                        $scope.mass++;
+                    if (mouseModel.getMass() + 1 <= 100)
+                        mouseModel.incrementMass();
+                        $scope.mass = mouseModel.getMass()
+                        $scope.$apply();
                 break;
-
                 case 83:
-                    if (($scope.mass - 1) >= 1)
-                        $scope.mass--;
+                    if (mouseModel.getMass() - 1 >= 1)
+                        mouseModel.decrementMass();
+                        $scope.mass = mouseModel.getMass();
+                        $scope.$apply();
                 break;
-
                 case 16:
                     mouseModel.setAngleLock(true);
-                    //This is because we want to copy the value
-                    //If set to the original array then it is
-                    //referenced.
-                    if (mouseModel.getMousePress()) {
-                        let down = mouseModel.getDown(),
-                            up = mouseModel.getUp();
-
-                        mouseModel.setAngleLockDelta(
-                            -down[0] + up[0],
-                            -down[1] + up[1]
-                        );
-                    }
-
+                    mouseModel.setAngleLockDelta();
                 break;
-
                 case 17:
                     mouseModel.setGridLock(true);
                 break;
@@ -128,28 +121,23 @@
                 width: $scope.mass + "%"
             });
 
-            $scope.$apply();
-
         });
 
         angular.element($window).bind("keyup", (e) => {
             if (e.keyCode == 16)
                 mouseModel.setAngleLock(false);
-                // mouse.angleLock.set = false;
             if (e.keyCode == 17) 
                 mouseModel.setGridLock(false);
-                // mouse.gridLock.set = false;
         });
 
         angular.element($window).bind("DOMContentLoaded", () => {
             //Test case. The controller utilises the following
-            Render.set({
+            render.set({
                 magnitudeRender: document.getElementById("magnitude-view"),
                 particleRender: document.getElementById("particle-view"),
                 trackRender: document.getElementById("track-view")
             });
 
-            Render.setParticleList();
 
         })
 

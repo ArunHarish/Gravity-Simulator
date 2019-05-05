@@ -19,7 +19,8 @@ let Mouse =  (function() {
         ];
 
         // Private properties
-        let magnitude,
+        let mass = 1,
+            magnitude,
             isDown = false,
             down = [],
             up = [],
@@ -43,14 +44,12 @@ let Mouse =  (function() {
             let down = this.getDown();
             // Grid Lock takes priority
             if (this.isGridLock()) {
-                console.log("Grid Lock");
                 this.gridLock();
                 return;
             }
 
             // Angle Lock
             if (this.isAngleLock()) {
-                console.log("Angle Lock");
                 this.angleLock();
                 return ;
             }
@@ -73,9 +72,12 @@ let Mouse =  (function() {
             return isDown;
         }
 
-        this.setAngleLockDelta = function setAngleLockDelta(xDelta, yDelta) {
-            angleLock.deltaPos[0] = xDelta;
-            angleLock.deltaPos[1] = yDelta;
+        this.setAngleLockDelta = function setAngleLockDelta() {
+            let down = this.getDown(),
+                up = this.getUp();
+
+            angleLock.deltaPos[0] = -down[0] + up[0];
+            angleLock.deltaPos[1] = -down[1] + up[1];
         }
 
         this.getAngleLockDelta = function getAngleLockDelta() {
@@ -168,7 +170,6 @@ let Mouse =  (function() {
 
         }
 
-
         this.gridLock = function gridLock() {
 
             let mag = this.getMag(),
@@ -193,6 +194,19 @@ let Mouse =  (function() {
             );
    
         }
+
+        this.getMass = function getMass() {
+            return mass;
+        }
+
+        this.incrementMass = function incrementMass() {
+            mass++;
+        }
+
+        this.decrementMass = function decrementMass() {
+            mass--;
+        }
+
    }
 
    return Mouse;
@@ -202,12 +216,22 @@ let Mouse =  (function() {
 let Simulation = (function() {
 
     function Particle() {
+
     }
 
-    function Simulation() {
+    function Simulation(mouseObject) {
+        if (!(mouseObject instanceof Mouse)) {
+            throw "Simulation requires Object Mouse as first argument.";
+        }
         const particleList = [];
 
-        this.getParticleList = function getParticleList() {
+        this.run = function run() {
+            // Moves next frame
+        }
+
+        this.getParticleList = function getParticleList(renderer) {
+            if (!(renderer instanceof RenderObject))
+                throw "getParticleList requires a rendererObject as first argument";
             return particleList;
         }
 
@@ -218,6 +242,8 @@ let Simulation = (function() {
             particleList.push(
 		        newParticle
             );
+
+            return true;
         }
 
     }

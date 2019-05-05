@@ -39,14 +39,18 @@
             ng-mousemove="setPoint($event)"></canvas>
         </div>
         <div id="gravity-information-wrapper">
+            <div id="information-down">
+                down: (∅, ∅)
+            </div>
             <div id="information-position">
-                coord:
+                | coord:
                 (<span id= "x-value">{{x >=0 ? x : "∅"}}</span>, 
-                <span id="y-value">{{y>=0 ? y : "∅"}}</span>)</div>
+                <span id="y-value">{{y>=0 ? y : "∅"}}</span>)
+            </div>
             <div id="information-mag">| mag: 
                 <span id="mag-value">{{mag || 0}}</span>
             </div>
-            <div id="information-angle">| theta: {{theta >= 0 ? theta : "∅"}}</div>
+            <div id="information-angle"> | theta: {{theta >= 0 ? theta : "∅"}}</div>
         </div>
         <div id="gravity-options-wrapper">
             <div id="track-path">

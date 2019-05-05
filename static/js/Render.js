@@ -1,10 +1,14 @@
 "use strict";
 
-function RenderObject() {
+function RenderObject(simulator) {
+
+    if (!(simulator instanceof Simulation)) {
+        throw "Renderer requires a Simulation Object as first argument";
+    }
+
     let renderInfo = {
-        magnitude : void 0,
-        validMagnitude : false,
-        particle : []
+        
+        particle : simulator.getParticleList(this)
     };
     
     //IIFE creating object
@@ -50,23 +54,19 @@ function RenderObject() {
     let Circle = new (function() {
         let x, y, context;
 
-        this.set = function(cntxt) {
-            if (cntxt) {
-                context = cntxt;
-            }
-
-            x = y = 0;
-            
-        }
-
-        this.position = function(newX, newY) {
-            x = newX;
-            y = newY;
-        }
-
         this.init = function(cntxt) {
-            this.context = cntxt;
+            context = cntxt;
         }
+
+        function renderCircle() {
+            // Move the simulator to next frame
+            simulator.run();
+            // Move next frame
+            requestAnimationFrame(renderCircle);
+        }
+
+        requestAnimationFrame(renderCircle);
+
 
     })();
 
@@ -149,13 +149,6 @@ function RenderObject() {
 
     }
 
-    // Sets any pre-defined particles and their information
-    this.setParticleList = function() {
-        
-    }
 
-    this.addParticle = function() {
-        console.log(true);
-    }
 
 }
