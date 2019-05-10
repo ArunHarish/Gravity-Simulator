@@ -58,9 +58,28 @@ function RenderObject(simulator) {
             context = cntxt;
         }
 
+        function drawCircle(element) {
+            let pos = element.getPosition();
+            
+            context.beginPath();
+            context.fillStyle = "#f00";
+            context.arc(pos[0], pos[1], 10, 0, Math.PI * 2, false);
+            context.fill();
+            context.stroke();
+
+        }
+
+        function clearCanvas() {
+            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        }
+
         function renderCircle() {
             // Move the simulator to next frame
             simulator.run();
+            // Clear the canvas
+            clearCanvas();
+            // render circle onto context
+            renderInfo.particle.forEach(drawCircle);
             // Move next frame
             requestAnimationFrame(renderCircle);
         }

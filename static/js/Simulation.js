@@ -214,8 +214,31 @@ let Mouse =  (function() {
 })();
 
 let Simulation = (function() {
+    let options = {};
 
-    function Particle() {
+    function Particle(locX, locY, dX, dY, mass) {
+        let color = options.color;
+
+        if (locX == void 0 || locY == void 0 || dY == void 0 || dY == void 0 || mass == void 0)
+            throw "Particle constructor: Particle(locX:number, locY:number, dX:number, dY:number, mass:number)";
+
+        this.getPosition = function getPosition() {
+            return [locX, locY];
+        }
+
+        this.run = function run() {
+            locX += dX;
+            locY += dY;
+        }
+
+        this.setDelta = function setDelta(deltaX, deltaY) {
+            dX = deltaX;
+            dY = deltaY;
+        }
+
+        this.getDelta = function getDelta() {
+            return [dX, dY];
+        }
 
     }
 
@@ -225,8 +248,24 @@ let Simulation = (function() {
         }
         const particleList = [];
 
+
+        // Helper functions
+        function getDelta() {
+            let mag = mouseObject.getMag(),
+                ang = mouseObject.getAngle();
+            
+            return {
+                // Only 2% of the magnitude is considered
+                x : 0.02 * mag * Math.cos(ang),
+                y : 0.02 * mag * Math.sin(ang)
+            }
+        }
+
         this.run = function run() {
             // Moves next frame
+            particleList.forEach(function(element) {
+                element.run();
+            });
         }
 
         this.getParticleList = function getParticleList(renderer) {
@@ -235,14 +274,16 @@ let Simulation = (function() {
             return particleList;
         }
 
-        this.addParticle = function addParticle(setting) {
+        this.addParticle = function addParticle() {
             
-            let newParticle = new Particle();
-
+            let mass = mouseObject.getMass(),
+                delta = getDelta(),
+                location = mouseObject.getDown();
+            
             particleList.push(
-		        newParticle
+                new Particle(location[0], location[1], delta.x, delta.y, mass)
             );
-
+            
             return true;
         }
 
