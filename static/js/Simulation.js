@@ -226,6 +226,10 @@ let Simulation = (function() {
             return [locX, locY];
         }
 
+        this.getMass = function getMass() {
+            return mass;
+        }
+
         this.run = function run() {
             locX += dX;
             locY += dY;
@@ -247,7 +251,7 @@ let Simulation = (function() {
             throw "Simulation requires Object Mouse as first argument.";
         }
         const particleList = [];
-
+        const GRAVITY = 6.674 * (10 ** (-1));
 
         // Helper functions
         function getDelta() {
@@ -261,9 +265,59 @@ let Simulation = (function() {
             }
         }
 
+        function magnitude(first, second) {
+            let deltaX = second[0] - first[0];
+            let deltaY = second[1] - first[1];
+            let mag = (deltaX ** 2 + deltaY ** 2) ** 0.5;
+
+            return mag;
+        }
+        
+        function directionVec(first, second, magnitude) {
+            let deltaX = second[0] - first[0];
+            let deltaY = second[1] - first[1];
+            return {
+                directionX : deltaX / magnitude,
+                directionY : deltaY / magnitude
+            }
+        }
+
+        function changeDelta(first, second) {
+            // Getting masses
+            const massTwo = second.getMass(),
+            // Getting positions
+                  posOne = first.getPosition(),
+                  posTwo = second.getPosition();
+            
+            let mag = magnitude(posOne, posTwo),
+                direction = directionVec(posOne, posTwo, mag);
+
+            return {
+                ddx : GRAVITY * massTwo * direction.directionX / mag,
+                ddy : GRAVITY * massTwo * direction.directionY / mag
+            }
+
+        }
+
         this.run = function run() {
             // Moves next frame
-            particleList.forEach(function(element) {
+            particleList.forEach(function(element, index) {
+                // delta x and y
+                let deltaArray = element.getDelta(),
+                    acceleration = {
+                        x : deltaArray[0],
+                        y : deltaArray[1]
+                    };
+
+                particleList.forEach(function(other, otherIndex) {
+                    if (otherIndex != index) {
+                        let newDelta = changeDelta(element, other);
+                        acceleration.x += newDelta.ddx;
+                        acceleration.y += newDelta.ddy;
+                    }
+                });
+
+                element.setDelta(acceleration.x, acceleration.y);
                 element.run();
             });
         }
