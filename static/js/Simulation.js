@@ -251,7 +251,7 @@ let Simulation = (function() {
             throw "Simulation requires Object Mouse as first argument.";
         }
         const particleList = [];
-        const GRAVITY = 6.674 * (10 ** (-1));
+        const GRAVITY = 6.674 * (10 ** (-3));
 
         // Helper functions
         function getDelta() {
