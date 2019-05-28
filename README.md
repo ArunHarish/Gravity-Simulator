@@ -1,2 +1,2 @@
 # Gravity-Simulator
-Repository to showcase the implementation of Barnes-Hut Algorithm
+Basic physics simulator that involves some vector mathematics to simulate gravitational attraction between objects.
